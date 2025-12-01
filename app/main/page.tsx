@@ -6,9 +6,9 @@ import React, {
   DragEvent,
   ChangeEvent,
 } from "react";
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://3.107.107.84:8000/predict";
+
+// Frontend always calls this relative path
+const API_URL = "/predict";
 
 export default function SegmentationPage() {
   const [dragActive, setDragActive] = useState(false);
@@ -24,20 +24,23 @@ export default function SegmentationPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Handle new file (from drop or file input)
-  const handleNewFile = useCallback((f: File) => {
-    setFile(f);
-    setMaskUrl(null);
-    setCoverage(null);
-    setError(null);
-    setSlowRequest(false);
-    setStatusMsg(null);
+  const handleNewFile = useCallback(
+    (f: File) => {
+      setFile(f);
+      setMaskUrl(null);
+      setCoverage(null);
+      setError(null);
+      setSlowRequest(false);
+      setStatusMsg(null);
 
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    const url = URL.createObjectURL(f);
-    setPreviewUrl(url);
-  }, [previewUrl]);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      const url = URL.createObjectURL(f);
+      setPreviewUrl(url);
+    },
+    [previewUrl]
+  );
 
   // Drag events
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -71,7 +74,7 @@ export default function SegmentationPage() {
     }
   };
 
-  // Call FastAPI backend
+  // Call backend via /predict (Next.js will rewrite this)
   const handlePredict = async () => {
     if (!file) {
       setError("Please select an image first.");
